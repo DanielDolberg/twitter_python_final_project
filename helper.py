@@ -1,4 +1,5 @@
 import requests
+import tweepy
 from bs4 import BeautifulSoup
 import numpy as np
 import json
@@ -10,7 +11,7 @@ from selenium.webdriver.support import expected_conditions as EC
 
 
 #credit https://codebeautify.org/jsonviewer/f83352
-WOEID = json.load('twitter_woeid.json')#the list of all twitter WOEID
+WOEID = json.load(open('twitter_woeid.json'))#the list of all twitter WOEID
 
 
 gc = geonamescache.GeonamesCache()
@@ -19,16 +20,21 @@ states = gc.get_us_states_by_names()
 
 
 def getTrendingTopics(api,country): #returns the current trend in the country
+    
     weed = None;
+    
     if(country == None):
         return weed
     
     country = country.replace(',',' ').split()[0].capitalize()
-    trends = api.available_trends()
-    for x in trends:
+    
+    
+    for x in WOEID:
         if(x["name"] == country):
             weed = x['woeid']
-            return api.get_place_trends(weed);
+            trends = api.get_place_trends(weed) #get a strange dict
+            trends = trends[0]['trends'] #extract the actual list we need
+            return [t['name'] for t in trends] #extract the names of the trending
     
     return None
 
