@@ -1,11 +1,16 @@
 import requests
 from bs4 import BeautifulSoup
 import numpy as np
+import json
 import geonamescache #this gives us a list of the countries
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+
+
+#credit https://codebeautify.org/jsonviewer/f83352
+WOEID = json.load('twitter_woeid.json')#the list of all twitter WOEID
 
 
 gc = geonamescache.GeonamesCache()
@@ -14,20 +19,28 @@ states = gc.get_us_states_by_names()
 
 
 def getTrendingTopics(api,country): #returns the current trend in the country
-    weed = -1;
-    for x in api.available_trends():
-        if(x["country"] == country):
-            weed = x['woeid'];
+    weed = None;
+    if(country == None):
+        return weed
     
-    return api.get_place_trends(weed);
+    country = country.replace(',',' ').split()[0].capitalize()
+    trends = api.available_trends()
+    for x in trends:
+        if(x["name"] == country):
+            weed = x['woeid']
+            return api.get_place_trends(weed);
+    
+    return None
 
 
 def getAge(driver):
     
+    
     wait = WebDriverWait(driver, 1)
     # Navigate to the Twitter profile page
     try:
-        birthday_element = wait.until(EC.presence_of_element_located((By.CLASS_NAME, "css-901oao css-16my406 r-14j79pv r-4qtqp9 r-poiln3 r-1b7u577 r-bcqeeo r-qvutc0")))
+        #birthday_element = wait.until(EC.presence_of_element_located((By.CLASS_NAME, "css-901oao css-16my406 r-14j79pv r-4qtqp9 r-poiln3 r-1b7u577 r-bcqeeo r-qvutc0")))
+        birthday_element = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "#react-root > div > div > div.css-1dbjc4n.r-18u37iz.r-13qz1uu.r-417010 > main > div > div > div > div > div > div:nth-child(3) > div > div > div > div > div:nth-child(4) > div > span:nth-child(3)")))
         birthday_text = birthday_element.text
 
         year_of_birth = int(birthday_text[-4:])
