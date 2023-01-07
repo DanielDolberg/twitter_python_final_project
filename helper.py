@@ -36,7 +36,7 @@ def getTrendingTopics(api,country): #returns the current trend in the country
             trends = trends[0]['trends'] #extract the actual list we need
             return [t['name'] for t in trends] #extract the names of the trending
     
-    return None
+    return []
 
 
 def getAge(driver):
@@ -98,7 +98,7 @@ def getGender(bio,location,name):
     
     #check they/them
     if they_them in bio.lower() or they_them in location.lower() or they_them in name.lower() :
-            return 'F'
+            return 'T'
     
     return None
 
