@@ -56,7 +56,7 @@ def getAge(driver):
     
     
 def check_country_real(loc):  
-    if(loc == ''): #if the user doesn't have a location the API will give '' back, which is basically None
+    if(loc == '' or loc == None): #if the user doesn't have a location the API will give '' back, which is basically None
         return None
     
     for d in countries:
@@ -71,6 +71,15 @@ def check_country_real(loc):
 
 
 def getGender(bio,location,name):
+    
+    
+    if type(bio) != 'str':
+        bio = 'x'
+    if type(location) != 'str':
+        location = 'x'
+    if type(name) != 'str':
+        name = 'x'    
+    
     bio = bio.lower().strip().replace(" ", "")#removes spaces
     location = location.lower().strip().replace(" ", "")#removes spaces
     name = name.lower().strip().replace(" ", "")#removes spaces
