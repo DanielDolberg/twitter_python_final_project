@@ -115,12 +115,10 @@ def countWordsInString(str):
     return i
 
 def get_WOEID(name,country):
-    
     for x in WOEID:
         if x['name'].lower() == name.lower():
-            return x
+            return x['woeid']
 
         if x['country'].lower() == country.lower():
-            return x
-
-    return None
+            return x['woeid']
+        
