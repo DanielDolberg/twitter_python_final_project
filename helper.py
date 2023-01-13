@@ -19,26 +19,6 @@ countries = gc.get_countries_by_names()
 states = gc.get_us_states_by_names()
 
 
-def getTrendingTopics(api,country): #returns the current trend in the country
-    
-    weed = None;
-    
-    if(country == None):
-        return weed
-    
-    country = country.replace(',',' ').split()[0].capitalize()
-    
-    
-    for x in WOEID:
-        if(x["name"] == country):
-            weed = x['woeid']
-            trends = api.get_place_trends(weed) #get a strange dict
-            trends = trends[0]['trends'] #extract the actual list we need
-            return [t['name'] for t in trends] #extract the names of the trending
-    
-    return []
-
-
 def getAge(driver):
     
     
@@ -122,3 +102,47 @@ def get_WOEID(name,country):
         if x['country'].lower() == country.lower():
             return x['woeid']
         
+def getAllTrends():#returns a dictionary of all the trends
+    trends = {}
+    us_link = 'https://trends24.in/united-states/'
+    nz_link = 'https://trends24.in/new-zealand/'    
+    uk_link = 'https://trends24.in/united-kingdom/'    
+    au_link = 'https://trends24.in/australia/'
+    ca_link = 'https://trends24.in/canada/'
+    
+    main_links = [us_link,nz_link,uk_link,uk_link,au_link,ca_link]
+    
+    driver = webdriver.Chrome()
+    wait = WebDriverWait(driver, 1)
+    
+    for l in main_links:
+        driver.get(l)
+        city_elements = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, ".suggested-locations__list")))
+        country_name = driver.find_element(By.CSS_SELECTOR,'#app-bar-toggle > span:nth-child(1)').text #get the area name
+        trends[country_name] = []
+        tr = driver.find_element(By.CSS_SELECTOR, "div.trend-card:nth-child(1) > ol:nth-child(2)")
+        tr = tr.find_elements(By.TAG_NAME,'a')
+        for y in tr:
+            trends[country_name].append(y.text)
+        
+        tmp_links = [x.get_attribute('href') for x in city_elements.find_elements(By.TAG_NAME,'a')]
+        
+        for x in tmp_links:
+            driver.get(x)
+            tr = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "div.trend-card:nth-child(1) > ol:nth-child(2)")))
+            name = driver.find_element(By.CSS_SELECTOR,'#app-bar-toggle > span:nth-child(1)').text #get the area name
+            name = name[:-(2+len(country_name))] #remove the name at the end, for example ', United States' at the end
+            trends[name] = []
+            tr = tr.find_elements(By.TAG_NAME,'a')
+            for y in tr:
+                trends[name].append(y.text)
+
+    driver.close()
+    return trends
+
+def getTrendsByLoc(city,country,trends):#returns an array of a trend in the loc
+    for t in trends:
+        if city == t.title():
+            return trends[city]
+    
+    return trends[country]
