@@ -137,7 +137,7 @@ def getAllTrends():#returns a dictionary of all the trends
             for y in tr:
                 trends[name].append(y.text)
 
-    driver.close()
+    driver.quit()
     return trends
 
 def getTrendsByLoc(city,country,trends):#returns an array of a trend in the loc
@@ -146,3 +146,12 @@ def getTrendsByLoc(city,country,trends):#returns an array of a trend in the loc
             return trends[city]
     
     return trends[country]
+
+def areTrendUsed(text,trends):
+    text = text.lower()
+    
+    for t in trends:
+        if t.lower() in text:
+            return True
+        
+    return False
