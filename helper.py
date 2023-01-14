@@ -80,7 +80,7 @@ def getGender(bio,location,name):
     if they_them in bio.lower() or they_them in location.lower() or they_them in name.lower() :
             return 'T'
     
-    return None
+    return np.nan
 
 def countWordsInString(str):
     if len(str) == 0:#return 0 if it's empty
